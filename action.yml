@@ -1,11 +1,22 @@
-name: 'Your name here'
-description: 'Provide a description here'
-author: 'Your name or organization here'
+name: 'supabase-assets'
+description: 'Supabase assets uploader'
+author: 'websublime.dev'
 inputs:
-  milliseconds: # change this
+  url:
     required: true
-    description: 'input description here'
-    default: 'default value if applicable'
+    description: 'Supabase client url.'
+  key:
+    required: true
+    description: 'Supabase client key.'
+  folder:
+    required: true
+    description: 'Folder path where assets are. Relative to project'
+  bucket:
+    required: true
+    description: 'Bucket name to where upload it.'
+  destiny:
+    required: true
+    description: 'Bucket folder path destiny.'
 runs:
   using: 'node16'
   main: 'dist/index.js'
