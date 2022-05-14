@@ -35,10 +35,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
+/* eslint-disable no-console */
 const core = __importStar(__nccwpck_require__(2186));
+const path_1 = __nccwpck_require__(5622);
 const utils_1 = __nccwpck_require__(918);
 const supabase_js_1 = __nccwpck_require__(1206);
-const path_1 = __nccwpck_require__(5622);
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -57,15 +58,20 @@ function run() {
             const upload = () => __awaiter(this, void 0, void 0, function* () {
                 for (const asset of assets) {
                     const file = yield (0, utils_1.fileBuffer)(asset);
-                    yield supabase.storage.from(bucket).upload((0, path_1.join)(destiny, asset), file, {
+                    const filename = (0, path_1.basename)(asset);
+                    yield supabase.storage
+                        .from(bucket)
+                        .upload((0, path_1.join)(destiny, filename), file, {
                         cacheControl: '3600',
                         upsert: false
                     });
-                    core.debug(`File: ${file} uploaded to bucket: ${bucket}`);
+                    core.debug(`File: ${filename} uploaded to bucket: ${bucket}/${destiny}`);
+                    console.log(`File: ${filename} uploaded to bucket: ${bucket}/${destiny}`);
                 }
             });
             yield upload();
             core.debug(`Files uploaded succefull to bucket: ${bucket}`);
+            console.log(`Files uploaded succefull to bucket: ${bucket}`);
         }
         catch (error) {
             if (error instanceof Error)
