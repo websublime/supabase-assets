@@ -1,7 +1,6 @@
 import * as core from '@actions/core'
 import {fileBuffer, walk} from './utils'
 import {createClient} from '@supabase/supabase-js'
-import {join} from 'path'
 
 async function run(): Promise<void> {
   try {
@@ -24,12 +23,12 @@ async function run(): Promise<void> {
       for (const asset of assets) {
         const file = await fileBuffer(asset)
 
-        await supabase.storage.from(bucket).upload(join(destiny, asset), file, {
+        await supabase.storage.from(bucket).upload(destiny, file, {
           cacheControl: '3600',
           upsert: false
         })
 
-        core.debug(`File: ${file} uploaded to bucket: ${bucket}`)
+        core.debug(`File: ${file} uploaded to bucket: ${bucket}/${destiny}`)
       }
     }
 
