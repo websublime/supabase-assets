@@ -1,4 +1,6 @@
+/* eslint-disable no-console */
 import * as core from '@actions/core'
+import {basename, join} from 'path'
 import {fileBuffer, walk} from './utils'
 import {createClient} from '@supabase/supabase-js'
 
@@ -22,19 +24,26 @@ async function run(): Promise<void> {
     const upload = async (): Promise<void> => {
       for (const asset of assets) {
         const file = await fileBuffer(asset)
+        const filename = basename(asset)
 
-        await supabase.storage.from(bucket).upload(destiny, file, {
-          cacheControl: '3600',
-          upsert: false
-        })
+        await supabase.storage
+          .from(bucket)
+          .upload(join(destiny, filename), file, {
+            cacheControl: '3600',
+            upsert: false
+          })
 
-        core.debug(`File: ${file} uploaded to bucket: ${bucket}/${destiny}`)
+        core.debug(`File: ${filename} uploaded to bucket: ${bucket}/${destiny}`)
+        console.log(
+          `File: ${filename} uploaded to bucket: ${bucket}/${destiny}`
+        )
       }
     }
 
     await upload()
 
     core.debug(`Files uploaded succefull to bucket: ${bucket}`)
+    console.log(`Files uploaded succefull to bucket: ${bucket}`)
   } catch (error) {
     if (error instanceof Error) core.setFailed(error.message)
   }
