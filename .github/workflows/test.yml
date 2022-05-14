@@ -20,5 +20,13 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: ./
+        env:
+          URL: ${{ secrets.SUPA_URL }}
+          KEY: ${{ secrets.SUPA_KEY }}
+          HASH: ${{ github.sha }}
         with:
-          milliseconds: 1000
+          url: "$URL"
+          key: "$KEY"
+          folder: 'dist/'
+          bucket: 'public'
+          destiny: 'supabase-action/"$HASH"'

@@ -1,7 +1,7 @@
 import * as core from '@actions/core'
-// import {createClient} from '@supabase/supabase-js'
-// import {join} from 'path'
-// import {walk} from './utils'
+import {fileBuffer, walk} from './utils'
+import {createClient} from '@supabase/supabase-js'
+import {join} from 'path'
 
 async function run(): Promise<void> {
   try {
@@ -17,21 +17,25 @@ async function run(): Promise<void> {
     core.debug(`Supabase bucket: ${bucket}`) // debug is only output if you set the secret `ACTIONS_STEP_DEBUG` to true
     core.debug(`Supabase bucket folder destiny: ${destiny}`) // debug is only output if you set the secret `ACTIONS_STEP_DEBUG` to true
 
-    // const supabase = createClient(url, key)
-    // const assets = await walk(folder)
+    const supabase = createClient(url, key)
+    const assets = await walk(folder)
 
-    /*
     const upload = async (): Promise<void> => {
-      for (const asset in assets) {
-        await supabase.storage
-          .from(bucket)
-          .upload(join(destiny, asset), avatarFile, {
-            cacheControl: '3600',
-            upsert: false
-          })
+      for (const asset of assets) {
+        const file = await fileBuffer(asset)
+
+        await supabase.storage.from(bucket).upload(join(destiny, asset), file, {
+          cacheControl: '3600',
+          upsert: false
+        })
+
+        core.debug(`File: ${file} uploaded to bucket: ${bucket}`)
       }
     }
-    */
+
+    await upload()
+
+    core.debug(`Files uploaded succefull to bucket: ${bucket}`)
   } catch (error) {
     if (error instanceof Error) core.setFailed(error.message)
   }
