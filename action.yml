@@ -1,6 +1,8 @@
 name: 'supabase-assets'
 description: 'Supabase assets uploader'
 author: 'websublime.dev'
+icon: 'sun'
+color: 'blue'
 inputs:
   url:
     required: true
