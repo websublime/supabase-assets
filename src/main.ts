@@ -1,9 +1,9 @@
 /* eslint-disable no-console */
 import * as core from '@actions/core'
+import * as mime from 'mime-types'
 import {basename, join} from 'path'
 import {fileBuffer, walk} from './utils'
 import {createClient} from '@supabase/supabase-js'
-import {fileTypeFromBuffer} from 'file-type'
 
 async function run(): Promise<void> {
   try {
@@ -26,20 +26,19 @@ async function run(): Promise<void> {
       for (const asset of assets) {
         const file = await fileBuffer(asset)
         const filename = basename(asset)
-        const {mime = 'text/plain;charset=UTF-8'} =
-          (await fileTypeFromBuffer(file)) || {}
+        const type = mime.lookup(asset)
+        const mimeType = type ? type : 'text/plain;charset=UTF-8'
 
         await supabase.storage
           .from(bucket)
           .upload(join(destiny, filename), file, {
             cacheControl: '3600',
             upsert: false,
-            contentType: mime
+            contentType: mimeType
           })
 
-        core.debug(`File: ${filename} uploaded to bucket: ${bucket}/${destiny}`)
         console.log(
-          `File: ${filename} uploaded to bucket: ${bucket}/${destiny}`
+          `File: ${filename} uploaded to bucket: ${bucket}/${destiny} with type: ${mimeType}`
         )
       }
     }
